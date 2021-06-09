@@ -3,7 +3,6 @@ CREATE TABLE Term(
     termSelf TEXT,
     reading TEXT,
     levelTerm INTEGER,
-    levleReading INTEGER,
     nextDate TEXT
 )
 
