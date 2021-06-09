@@ -35,11 +35,10 @@ def get_date_diff(day_term,day_target):
 def get_today_list():
     d = conn.cursor()
     # d.execute(""" SELECT * from Term where julianday('now') >= julianday(nextDate); """)
-    
     d.execute(""" SELECT * from Term where Date('now') >= nextDate; """)
     return d.fetchall()
 
-
+# this initializes the database's tables
 c.execute("""
     CREATE TABLE Term(
         termId INTEGER PRIMARY KEY,
@@ -49,13 +48,13 @@ c.execute("""
         nextDate TEXT
     )
     CREATE TABLE Definition(
-    termId INTEGER,
-    definition TEXT
+        termSelf TEXT,
+        definition TEXT
     )
     CREATE TABLE SampleSentence(
-    termId INTEGER,
-    sentence TEXT,
-    translation TEXT
+        termSelf TEXT,
+        sentence TEXT,
+        translation TEXT
     )
 """)
 
