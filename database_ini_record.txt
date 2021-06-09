@@ -1,0 +1,19 @@
+CREATE TABLE Term(
+    termId INTEGER PRIMARY KEY,
+    termSelf TEXT,
+    reading TEXT,
+    levelTerm INTEGER,
+    levleReading INTEGER,
+    nextDate TEXT
+)
+
+CREATE TABLE Definition(
+    termId INTEGER,
+    definition TEXT
+)
+
+CREATE TABLE SampleSentence(
+    termId INTEGER,
+    sentence TEXT,
+    translation TEXT
+)
