@@ -1,8 +1,28 @@
 import sqlite3
 import math
-conn = sqlite3.connect(":memory:")
+conn = sqlite3.connect("term_02.db")
 c = conn.cursor()
-
+def level_to_day(level):
+    if level == 1:
+        return 1
+    elif level == 2:
+        return 2
+    elif level == 3:
+        return 3
+    elif level == 4:
+        return 4
+    elif level == 5:
+        return 6
+    elif level == 6:
+        return 8
+    elif level == 7:
+        return 10
+    elif level == 8:
+        return 13
+    elif level == 9:
+        return 17
+    else:
+        return 25
 def print_list_programmer():
     print('test code*')
     d = conn.cursor()
@@ -55,9 +75,11 @@ def get_today_list():
     d.execute(""" SELECT * from Term where Date('now') >= nextDate; """)
     return d.fetchall()
 
-
-
-
+def update_term(cid,new_level):
+    new_day = level_to_day(new_level)
+    new_date = get_date_from_now(new_day)
+    d = conn.cursor()
+    d.execute(""" UPDATE Term SET nextDate = ?, levelTerm = ? WHERE termId = ?""", (new_date,new_level,cid))
 
 # this initializes the database's tables
 c.execute("""
@@ -68,7 +90,6 @@ c.execute("""
         levelTerm INTEGER,
         nextDate TEXT
     )
-
 """)
 c.execute("""
     CREATE TABLE Definition(
@@ -82,36 +103,39 @@ c.execute("""
         translation TEXT
     )""")
 
-insert_term('向こう','むこう',1)
-c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",('廊下','ろうか',1,get_date_from_now(-1)))
-c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",('廊下','ろうか',1,get_date_from_now(0)))
-c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",('廊下','ろうか',1,get_date_from_now(2)))
+# insert_term('向こう','むこう',1)
+# c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",('廊下','ろうか',1,get_date_from_now(-1)))
+# c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",('廊下','ろうか',1,get_date_from_now(0)))
+# c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",('廊下','ろうか',1,get_date_from_now(2)))
 
-insert_def('廊下','走廊')
-insert_def('廊下','corridor')
+# insert_def('廊下','走廊')
+# insert_def('廊下','corridor')
 
-insert_sen('廊下','随便写test随便写sentence','随便写test')
-insert_sen('廊下','sentence','随便写random sentence')
-insert_sen('廊下','ランドン','随便写ランドン')
+# insert_sen('廊下','随便写test随便写sentence','随便写test')
+# insert_sen('廊下','sentence','随便写random sentence')
+# insert_sen('廊下','ランドン','随便写ランドン')
 
-d= conn.cursor()
-print("-----------------")
-d.execute(""" SELECT definition from Definition where termself = ? """,('廊下',))
-dlist = d.fetchall()
-for x in range(len(dlist)):
-    for y in range(len(dlist[x])):
-        print (str(x)+") "+dlist[x][y],sep = ', ')
-d.execute(""" SELECT sentence,translation from SampleSentence where termself = ? """,('廊下',))
-dlist = d.fetchall()
-for x in range(len(dlist)):
-    print("-----------------")
-    for y in range(len(dlist[x])):
-        print (dlist[x][y])
+# def print_term_condition():
+#     d= conn.cursor()
+#     print("-----------------")
+#     d.execute(""" SELECT definition from Definition where termself = ? """,('廊下',))
+#     dlist = d.fetchall()
+#     for x in range(len(dlist)):
+#         for y in range(len(dlist[x])):
+#             print (str(x)+") "+dlist[x][y],sep = ', ')
+#     d.execute(""" SELECT sentence,translation from SampleSentence where termself = ? """,('廊下',))
+#     dlist = d.fetchall()
+#     for x in range(len(dlist)):
+#         print("-----------------")
+#         for y in range(len(dlist[x])):
+#             print (dlist[x][y])
 
-# now we test get today term
+# # now we test get today term
+
+# update_term(2,5)
 # list_demo = get_today_list()
 # print(list_demo)
-
+# print('----------------')
 # print_list_programmer()
 
 conn.commit()

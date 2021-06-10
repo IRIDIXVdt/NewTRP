@@ -49,7 +49,7 @@ def get_date_from_now(diff = 0):
     return text1
 
 def insert_term(textself,reading,levelTerm):
-    nextDate = get_date_from_now(1)
+    nextDate = get_date_from_now(0)
     c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",(textself,reading,levelTerm,nextDate))
     conn.commit()
 def insert_def(term_sample, def_sample):
@@ -94,19 +94,12 @@ def level_to_day(level):
         return 25
 # the following methods are for prompting user inputs
 
-def start_test_user():
-    todaylist = get_today_list()
-    if len(todaylist) == 0: 
-        # then you have finished all the tasks here
-        print("""
-        ======================================================
-        You do not have any terms in the list right now.
-        ======================================================
-        """)
-    else:
-        random.shuffle(todaylist)
-        # now we start the testing
-        exit
+def term_checked(spelling):
+    d = conn.cursor()
+    d.execute(""" SELECT * from Term where termSelf = ? Date('now') < nextDate; """,(spelling,))
+    possibleList = d.fetchall()
+    # if there is something in the possiblelist then it must be checked
+    return len(possibleList)>0
 
 def insert_term_user():
     d = conn.cursor()
@@ -220,6 +213,47 @@ def display_programmer():
     reading = input("reading is: ")
     print_test_term_user(spelling,reading)
 
+def update_term(cid,new_level):
+    new_day = level_to_day(new_level)
+    new_date = get_date_from_now(new_day)
+    d = conn.cursor()
+    d.execute(""" UPDATE Term SET nextDate = ?, levelTerm = ? WHERE termId = ?""", (new_date,new_level,cid))
+
+def start_test_user():
+    todaylist = get_today_list()
+    if len(todaylist) == 0: 
+        # then you have finished all the tasks here
+        print("""
+        ======================================================
+        You do not have any terms in the list right now.
+        ======================================================
+        """)
+    else:
+        random.shuffle(todaylist)
+        mistake_list = []
+        # now we start the testing
+        while len(todaylist)>0:
+            cid,cterm,cread,cl,cd=todaylist.pop()
+            test_result = print_test_term_user(cterm,cread)
+            if test_result == 'not_answered':
+                break
+            elif test_result == 'N' or 'n':
+                # the user is not remembering the term, we want them to review it
+                if not term_checked(cterm):
+                    todaylist.insert(4,(cid,cterm,cread,cl-1,cd))
+                    todaylist.insert(7,(cid,cterm,cread,cl-1,cd))
+                else:
+                    update_term(cid,cl-1)
+                    todaylist.insert(2,(cid,cterm,cread,cl-1,cd))
+                    todaylist.insert(4,(cid,cterm,cread,cl-1,cd))
+                    todaylist.insert(7,(cid,cterm,cread,cl-1,cd))
+            else:
+                if not term_checked(cterm):
+                    # terms that have never been checked suggests its something the user remembers
+                    update_term(cid,cl+1)
+            conn.commit()
+
+        # exit
 
 def main():
     help_message()
