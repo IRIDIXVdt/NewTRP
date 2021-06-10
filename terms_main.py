@@ -1,14 +1,12 @@
 import os
 import sqlite3
 import math
-
+import random
 # initializations
 conn = sqlite3.connect("term01.db")
 c = conn.cursor()
 clear = lambda: os.system('cls') #on Windows System
 print('for help, type in h')
-
-
 
 
 def print_list_programmer():
@@ -97,7 +95,19 @@ def level_to_day(level):
 # the following methods are for prompting user inputs
 
 def start_test_user():
-    exit
+    todaylist = get_today_list()
+    if len(todaylist) == 0: 
+        # then you have finished all the tasks here
+        print("""
+        ======================================================
+        You do not have any terms in the list right now.
+        ======================================================
+        """)
+    else:
+        random.shuffle(todaylist)
+        # now we start the testing
+        exit
+
 def insert_term_user():
     d = conn.cursor()
     while 1:
@@ -174,38 +184,48 @@ def print_list_programmer():
     print(d.fetchall()) 
     d.execute(""" SELECT * from SampleSentence """)
     print(d.fetchall()) 
-def print_test_term_user(spelling):
+def print_test_term_user(spelling, reading):
     clear()
     d = conn.cursor()
     print("===================================\n")
     print(spelling)
-    
-    print("----------------------------------")
-    d.execute(""" SELECT definition from Definition where termself = ? """,(spelling,))
-    dlist = d.fetchall()
-    for x in range(len(dlist)):
-        for y in range(len(dlist[x])):
-            print (str(x)+") "+dlist[x][y],sep = ', ')
-    d.execute(""" SELECT sentence,translation from SampleSentence where termself = ? """,(spelling,))
-    dlist = d.fetchall()
-    for x in range(len(dlist)):
+    exit_check = input("To reveal the answer, hit 'enter': ")
+    if exit_check != 'exit':
+        print ("\033[A\033[A")
+        
         print("----------------------------------")
-        for y in range(len(dlist[x])):
-            print (dlist[x][y])
-    print("\n===================================")
-    # return list_def,list_sen
-    # not completed
+        print(reading)
+        d.execute(""" SELECT definition from Definition where termself = ? """,(spelling,))
+        dlist = d.fetchall()
+        for x in range(len(dlist)):
+            for y in range(len(dlist[x])):
+                print (str(x)+") "+dlist[x][y],sep = ', ')
+        d.execute(""" SELECT sentence,translation from SampleSentence where termself = ? """,(spelling,))
+        dlist = d.fetchall()
+        for x in range(len(dlist)):
+            print("----------------------------------")
+            for y in range(len(dlist[x])):
+                print (dlist[x][y])
+        understanding = input("I know this term (y/n): ")
+        print ("\033[A\033[A")    
+        print("===================================")
+        return understanding
+        # return list_def,list_sen
+    else:
+        help_message()
+        return 'not_answered'
 
 def display_programmer():
     spelling = input("term is: ")
-    print_test_term_user(spelling)
-
+    reading = input("reading is: ")
+    print_test_term_user(spelling,reading)
 
 
 def main():
     help_message()
     while 1:
-        x = input(">>> ")
+        x = input("""
+            >>> """)
         if x == 'exit':
             break
         elif x == 'h':
