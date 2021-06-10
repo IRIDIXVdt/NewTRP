@@ -75,9 +75,9 @@ def level_to_day(level):
     if level == 1:
         return 1
     elif level == 2:
-        return 2
+        return 1
     elif level == 3:
-        return 3
+        return 2
     elif level == 4:
         return 4
     elif level == 5:
@@ -96,7 +96,7 @@ def level_to_day(level):
 
 def term_checked(spelling):
     d = conn.cursor()
-    d.execute(""" SELECT * from Term where termSelf = ? Date('now') < nextDate; """,(spelling,))
+    d.execute(""" SELECT * from Term where termSelf = ? AND Date('now') < nextDate; """,(spelling,))
     possibleList = d.fetchall()
     # if there is something in the possiblelist then it must be checked
     return len(possibleList)>0
@@ -178,7 +178,8 @@ def print_list_programmer():
     d.execute(""" SELECT * from SampleSentence """)
     print(d.fetchall()) 
 def print_test_term_user(spelling, reading):
-    clear()
+    # clear()
+    # -------------------------------------------------------
     d = conn.cursor()
     print("===================================\n")
     print(spelling)
@@ -205,7 +206,7 @@ def print_test_term_user(spelling, reading):
         return understanding
         # return list_def,list_sen
     else:
-        help_message()
+        # help_message()
         return 'not_answered'
 
 def display_programmer():
@@ -234,11 +235,16 @@ def start_test_user():
         # now we start the testing
         while len(todaylist)>0:
             cid,cterm,cread,cl,cd=todaylist.pop()
+            # print("todays list is ", todaylist)
             test_result = print_test_term_user(cterm,cread)
+            # print("test result: ", test_result)
+            
             if test_result == 'not_answered':
                 break
-            elif test_result == 'N' or 'n':
+            elif (test_result == 'N') or (test_result == 'n'):
                 # the user is not remembering the term, we want them to review it
+                if cl == 1:
+                    cl = 2
                 if not term_checked(cterm):
                     todaylist.insert(4,(cid,cterm,cread,cl-1,cd))
                     todaylist.insert(7,(cid,cterm,cread,cl-1,cd))
@@ -252,7 +258,7 @@ def start_test_user():
                     # terms that have never been checked suggests its something the user remembers
                     update_term(cid,cl+1)
             conn.commit()
-
+        print("----------All finished!----------")
         # exit
 
 def main():

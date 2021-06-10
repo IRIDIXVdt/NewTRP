@@ -1,14 +1,14 @@
 import sqlite3
 import math
-conn = sqlite3.connect("term_02.db")
+conn = sqlite3.connect("term01.db")
 c = conn.cursor()
 def level_to_day(level):
     if level == 1:
         return 1
     elif level == 2:
-        return 2
+        return 1
     elif level == 3:
-        return 3
+        return 2
     elif level == 4:
         return 4
     elif level == 5:
@@ -51,7 +51,7 @@ def get_date_from_now(diff = 0):
     return text1
 
 def insert_term(textself,reading,levelTerm):
-    nextDate = get_date_from_now(1)
+    nextDate = get_date_from_now(0)
     c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",(textself,reading,levelTerm,nextDate))
 
 def insert_def(term_sample, def_sample):
@@ -103,7 +103,8 @@ c.execute("""
         translation TEXT
     )""")
 
-# insert_term('向こう','むこう',1)
+insert_term('向こう','むこう',1)
+insert_term('廊下','ろうか',1)
 # c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",('廊下','ろうか',1,get_date_from_now(-1)))
 # c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",('廊下','ろうか',1,get_date_from_now(0)))
 # c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",('廊下','ろうか',1,get_date_from_now(2)))
