@@ -16,3 +16,24 @@ CREATE TABLE SampleSentence(
     sentence TEXT,
     translation TEXT
 )
+
+# sample database
+# c.execute("""
+#     CREATE TABLE Term(
+#         termId INTEGER PRIMARY KEY,
+#         termSelf TEXT,
+#         reading TEXT,
+#         levelTerm INTEGER,
+#         nextDate TEXT
+#     )""")
+# c.execute("""
+#     CREATE TABLE Definition(
+#         termSelf TEXT,
+#         definition TEXT
+#     )""")
+# c.execute("""
+#     CREATE TABLE SampleSentence(
+#         termSelf TEXT,
+#         sentence TEXT,
+#         translation TEXT
+#     )""")
