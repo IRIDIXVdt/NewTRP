@@ -3,7 +3,7 @@
 
 #How to get started
 
-Download everything on this page, the exe file is in the "dist" directory
+[Download](https://github.com/IRIDIXVdt/NewTRP/archive/refs/heads/main.zip) everything on this page, the exe file is in the "dist" directory
 
 
 #General Guidance
