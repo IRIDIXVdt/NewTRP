@@ -178,7 +178,7 @@ def print_list_programmer():
     d.execute(""" SELECT * from SampleSentence """)
     print(d.fetchall()) 
 def print_test_term_user(spelling, reading):
-    # clear()
+    clear()
     # -------------------------------------------------------
     d = conn.cursor()
     print("===================================\n")
@@ -219,6 +219,7 @@ def update_term(cid,new_level):
     new_date = get_date_from_now(new_day)
     d = conn.cursor()
     d.execute(""" UPDATE Term SET nextDate = ?, levelTerm = ? WHERE termId = ?""", (new_date,new_level,cid))
+    conn.commit()
 
 def start_test_user():
     todaylist = get_today_list()
@@ -231,7 +232,7 @@ def start_test_user():
         """)
     else:
         random.shuffle(todaylist)
-        mistake_list = []
+        # mistake_list = []
         # now we start the testing
         while len(todaylist)>0:
             cid,cterm,cread,cl,cd=todaylist.pop()

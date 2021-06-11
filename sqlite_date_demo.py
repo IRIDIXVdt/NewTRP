@@ -1,6 +1,6 @@
 import sqlite3
 import math
-conn = sqlite3.connect("term01.db")
+conn = sqlite3.connect("termUser.db")
 c = conn.cursor()
 def level_to_day(level):
     if level == 1:
@@ -103,8 +103,12 @@ c.execute("""
         translation TEXT
     )""")
 
-insert_term('向こう','むこう',1)
-insert_term('廊下','ろうか',1)
+# insert_term('向こう','むこう',1)
+# insert_term('廊下','ろうか',1)
+
+
+
+
 # c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",('廊下','ろうか',1,get_date_from_now(-1)))
 # c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",('廊下','ろうか',1,get_date_from_now(0)))
 # c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",('廊下','ろうか',1,get_date_from_now(2)))
