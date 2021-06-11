@@ -3,7 +3,7 @@ import sqlite3
 import math
 import random
 # initializations
-conn = sqlite3.connect("term01.db")
+conn = sqlite3.connect("termUser.db")
 c = conn.cursor()
 clear = lambda: os.system('cls') #on Windows System
 print('for help, type in h')
