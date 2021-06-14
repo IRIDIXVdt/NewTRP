@@ -3,7 +3,7 @@ import sqlite3
 import math
 import random
 # initializations
-conn = sqlite3.connect("termUser.db")
+conn = sqlite3.connect("term01.db")
 c = conn.cursor()
 clear = lambda: os.system('cls') #on Windows System
 print('for help, type in h')
@@ -17,7 +17,8 @@ def print_list_programmer():
     d.execute(""" SELECT * from Definition """)
     print(d.fetchall()) 
     d.execute(""" SELECT * from SampleSentence """)
-    print(d.fetchall()) 
+    print(d.fetchall())
+
 def help_message():
     clear()
     print("""
@@ -48,15 +49,29 @@ def get_date_from_now(diff = 0):
     text1 = d.fetchone()[0]
     return text1
 
-def insert_term(textself,reading,levelTerm):
-    nextDate = get_date_from_now(0)
-    c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",(textself,reading,levelTerm,nextDate))
-    conn.commit()
+def term_exist(spelling):
+    d = conn.cursor()
+    d.execute(""" SELECT * from Term where termSelf = ? ; """,(spelling,))
+    possibleList = d.fetchall()
+    # if there is something in the possiblelist then it must be a term that already exist
+    return len(possibleList)>0
+
 def insert_def(term_sample, def_sample):
     c.execute("INSERT INTO Definition VALUES (?,?)",(term_sample,def_sample))
     conn.commit()
+
 def insert_sen(term, sen, tran):
     c.execute("INSERT INTO SampleSentence VALUES (?,?,?)",(term,sen,tran))
+    conn.commit()
+
+def insert_term(textself,reading,levelTerm):
+    if not term_exist(textself):
+        nextDate = get_date_from_now(0)
+        c.execute("INSERT INTO Term(termSelf,reading,levelTerm,nextDate) VALUES (?,?,?,?)",(textself,reading,levelTerm,nextDate))
+    else:
+        print("We have a repeating term presumably with a differernt reading")
+        new_reading = '(also reads as) ' + reading
+        insert_def(textself,new_reading)
     conn.commit()
 
 def get_date_diff(day_term,day_target):
@@ -71,6 +86,7 @@ def get_today_list():
     # d.execute(""" SELECT * from Term where julianday('now') >= julianday(nextDate); """)
     d.execute(""" SELECT * from Term where Date('now') >= nextDate; """)
     return d.fetchall()
+
 def level_to_day(level):
     if level == 1:
         return 1
@@ -92,6 +108,30 @@ def level_to_day(level):
         return 17
     else:
         return 25
+
+def remove_term_programmer():
+    x = input("remove by id: ")
+    if x == 'exit':
+        print('return')
+    else: 
+        d = conn.cursor()
+        d.execute("""delete from Term where termId= ?; """,(x,))
+        print("successful")
+        conn.commit()
+    y = input("hit enter return >>>")
+
+def remove_term_all_programmer():
+    x = input("remove everything* by term: ")
+    if x == 'exit':
+        print('return')
+    else: 
+        d = conn.cursor()
+        d.execute("""delete from Term where termSelf= ?; """,(x,))
+        d.execute("""delete from Definition where termSelf= ?; """,(x,))
+        d.execute("""delete from SampleSentence where termSelf= ?; """,(x,))
+        print("successful")
+        conn.commit()
+    y = input("hit enter return >>>")
 # the following methods are for prompting user inputs
 
 def term_checked(spelling):
@@ -122,8 +162,10 @@ def insert_term_user():
         if z == "exit":
             help_message()
             break
-        elif z != None:
+        elif z.strip():
+            # this is saying string z is not an empty string 
             insert_def(term, z)
+            # we insert one definition
             conn.commit()
 def add_sample_user():
     d = conn.cursor()
@@ -148,6 +190,7 @@ def add_sample_user():
         if z == "exit":
             help_message()
             break
+
 def add_definition_user():
     d = conn.cursor()
     while 1:
@@ -168,6 +211,7 @@ def add_definition_user():
         if z == "exit":
             help_message()
             break
+
 def print_list_programmer():
     print('test code*')
     d = conn.cursor()
@@ -177,8 +221,9 @@ def print_list_programmer():
     print(d.fetchall()) 
     d.execute(""" SELECT * from SampleSentence """)
     print(d.fetchall()) 
+
 def print_test_term_user(spelling, reading):
-    clear()
+    
     # -------------------------------------------------------
     d = conn.cursor()
     print("===================================\n")
@@ -188,12 +233,12 @@ def print_test_term_user(spelling, reading):
         print ("\033[A\033[A")
         
         print("----------------------------------")
-        print(reading)
+        print("1) "+reading)
         d.execute(""" SELECT definition from Definition where termself = ? """,(spelling,))
         dlist = d.fetchall()
         for x in range(len(dlist)):
             for y in range(len(dlist[x])):
-                print (str(x)+") "+dlist[x][y],sep = ', ')
+                print (str(x+2)+") "+dlist[x][y],sep = ', ')
         d.execute(""" SELECT sentence,translation from SampleSentence where termself = ? """,(spelling,))
         dlist = d.fetchall()
         for x in range(len(dlist)):
@@ -235,7 +280,9 @@ def start_test_user():
         # mistake_list = []
         # now we start the testing
         while len(todaylist)>0:
-            cid,cterm,cread,cl,cd=todaylist.pop()
+            clear()
+            print(todaylist)
+            cid,cterm,cread,cl,cd=todaylist.pop(0)
             # print("todays list is ", todaylist)
             test_result = print_test_term_user(cterm,cread)
             # print("test result: ", test_result)
@@ -247,13 +294,17 @@ def start_test_user():
                 if cl == 1:
                     cl = 2
                 if not term_checked(cterm):
-                    todaylist.insert(4,(cid,cterm,cread,cl-1,cd))
+                    # todaylist.insert(4,(cid,cterm,cread,cl-1,cd))
+                    
                     todaylist.insert(7,(cid,cterm,cread,cl-1,cd))
+                    todaylist.insert(4,(cid,cterm,cread,cl-1,cd))
+                    todaylist.insert(2,(cid,cterm,cread,cl-1,cd))
                 else:
                     update_term(cid,cl-1)
                     todaylist.insert(2,(cid,cterm,cread,cl-1,cd))
-                    todaylist.insert(4,(cid,cterm,cread,cl-1,cd))
-                    todaylist.insert(7,(cid,cterm,cread,cl-1,cd))
+                    
+
+                    
             else:
                 if not term_checked(cterm):
                     # terms that have never been checked suggests its something the user remembers
@@ -262,6 +313,7 @@ def start_test_user():
         print("----------All finished!----------")
         # exit
 
+# main method
 def main():
     help_message()
     while 1:
@@ -287,6 +339,10 @@ def main():
             print(get_today_list())
         elif x == 'display term':
             display_programmer()
+        elif x =='remove':
+            remove_term_programmer()
+        elif x =='remove all':
+            remove_term_all_programmer()
     conn.close()
 
 if __name__ == '__main__':
