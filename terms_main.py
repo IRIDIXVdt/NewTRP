@@ -3,7 +3,7 @@ import sqlite3
 import math
 import random
 # initializations
-conn = sqlite3.connect("term01.db")
+conn = sqlite3.connect("termUser.db")
 c = conn.cursor()
 clear = lambda: os.system('cls') #on Windows System
 print('for help, type in h')
@@ -281,7 +281,7 @@ def start_test_user():
         # now we start the testing
         while len(todaylist)>0:
             clear()
-            print(todaylist)
+            # print(todaylist)
             cid,cterm,cread,cl,cd=todaylist.pop(0)
             # print("todays list is ", todaylist)
             test_result = print_test_term_user(cterm,cread)
