@@ -296,12 +296,12 @@ def start_test_user():
                 if not term_checked(cterm):
                     # todaylist.insert(4,(cid,cterm,cread,cl-1,cd))
                     
-                    todaylist.insert(7,(cid,cterm,cread,cl-1,cd))
+                    todaylist.insert(6,(cid,cterm,cread,cl-1,cd))
                     todaylist.insert(4,(cid,cterm,cread,cl-1,cd))
                     todaylist.insert(2,(cid,cterm,cread,cl-1,cd))
                 else:
                     update_term(cid,cl-1)
-                    todaylist.insert(2,(cid,cterm,cread,cl-1,cd))
+                    todaylist.insert(8,(cid,cterm,cread,cl-1,cd))
                     
 
                     
